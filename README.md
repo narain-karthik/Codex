@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+
 # Codex - Knowledge Management System
->>>>>>> 02e74f30e109fa2d22f29e8fb9701ceab65ec7bf
+
 
 A professional, client-side knowledge management platform designed for teams and organizations. Built with modern web technologies and optimized for GitHub Pages deployment, Codex delivers enterprise-grade document management without server infrastructure complexity.
 
