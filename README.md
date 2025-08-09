@@ -1,4 +1,6 @@
-# Codex - Enterprise Knowledge Management System
+<<<<<<< HEAD
+# Codex - Knowledge Management System
+>>>>>>> 02e74f30e109fa2d22f29e8fb9701ceab65ec7bf
 
 A professional, client-side knowledge management platform designed for teams and organizations. Built with modern web technologies and optimized for GitHub Pages deployment, Codex delivers enterprise-grade document management without server infrastructure complexity.
 
@@ -57,7 +59,11 @@ Codex transforms how teams manage and access critical information. This sophisti
 
 1. **Clone Repository**
    ```bash
+<<<<<<< HEAD
    git clone https://github.com/your-username/codex.git
+=======
+   git clone https://github.com/narain-karthik/Codex.git
+>>>>>>> 02e74f30e109fa2d22f29e8fb9701ceab65ec7bf
    cd codex
    ```
 
@@ -137,7 +143,10 @@ codex/
 │   ├── styles.css          # Primary stylesheet (1,250+ lines)  
 │   └── dark-mode.css       # Dark theme implementation
 ├── README.md               # Documentation (this file)
+<<<<<<< HEAD
 └── replit.md               # Development documentation
+=======
+>>>>>>> 02e74f30e109fa2d22f29e8fb9701ceab65ec7bf
 ```
 
 ## 🛠️ Technology Stack
@@ -247,4 +256,8 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 **Codex Knowledge Management System** - Empowering teams with professional, secure, and scalable documentation solutions.
 
+<<<<<<< HEAD
 *Built with ❤️ for teams who value knowledge sharing and collaboration.*
+=======
+*Built with ❤️ for teams who value knowledge sharing and collaboration.*
+>>>>>>> 02e74f30e109fa2d22f29e8fb9701ceab65ec7bf
