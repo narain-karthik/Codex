@@ -1242,3 +1242,86 @@ body {
         margin: var(--spacing-md);
     }
 }
+
+/* Authentication switch styling */
+.auth-switch {
+    text-align: center;
+    margin: 1rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.auth-switch p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.auth-switch a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Font selector styling */
+.font-selector {
+    background: none;
+    border: none;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    color: var(--text);
+    transition: background-color 0.2s;
+}
+
+.font-selector:hover {
+    background-color: var(--background-secondary);
+}
+
+.font-modal {
+    max-width: 500px;
+    width: 90%;
+}
+
+.font-options {
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.font-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    border: 2px solid var(--border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--background);
+}
+
+.font-option:hover {
+    border-color: var(--primary);
+    background: var(--background-secondary);
+}
+
+.font-option.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.font-preview {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.font-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}

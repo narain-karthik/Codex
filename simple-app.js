@@ -10,11 +10,22 @@ var CodexApp = {
     currentDocument: null,
     isAuthenticated: false,
     
-    // User credentials
+    // User credentials - change these to your preferred login
     credentials: {
-        username: 'Narain1010',
+        username: 'narain1010',
         password: 'narain1010@'
     },
+    
+    // Available fonts
+    fonts: [
+        { name: 'Inter', family: 'Inter, sans-serif', label: 'Inter (Default)' },
+        { name: 'Roboto', family: 'Roboto, sans-serif', label: 'Roboto' },
+        { name: 'Open Sans', family: '"Open Sans", sans-serif', label: 'Open Sans' },
+        { name: 'Lato', family: 'Lato, sans-serif', label: 'Lato' },
+        { name: 'Source Sans Pro', family: '"Source Sans Pro", sans-serif', label: 'Source Sans Pro' },
+        { name: 'Poppins', family: 'Poppins, sans-serif', label: 'Poppins' },
+        { name: 'Montserrat', family: 'Montserrat, sans-serif', label: 'Montserrat' }
+    ],
     
     // Initialize the application
     init: function() {
@@ -29,6 +40,7 @@ var CodexApp = {
         this.loadData();
         this.setupEventListeners();
         this.setupTheme();
+        this.initFont();
         this.hideLoading();
         this.showHome();
         this.renderSidebar();
@@ -172,6 +184,14 @@ var CodexApp = {
             self.toggleTheme();
         };
         
+        // Font selector
+        var fontSelector = document.getElementById('font-selector');
+        if (fontSelector) {
+            fontSelector.onclick = function() {
+                self.showFontSelector();
+            };
+        }
+        
         // New document button
         document.getElementById('new-document').onclick = function() {
             self.showEditor(null);
@@ -259,7 +279,7 @@ var CodexApp = {
             };
         }
         
-        // Logout button (will be added to header)
+        // Logout button
         var logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.onclick = function() {
@@ -297,6 +317,75 @@ var CodexApp = {
         var loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             loadingScreen.classList.add('hidden');
+        }
+    },
+    
+    // Show font selector modal
+    showFontSelector: function() {
+        var self = this;
+        var app = document.getElementById('app');
+        
+        // Create modal HTML
+        var modalHTML = '<div class="modal-overlay font-modal-overlay">' +
+            '<div class="modal font-modal">' +
+                '<div class="modal-header">' +
+                    '<h3>Choose Font</h3>' +
+                    '<button class="modal-close" onclick="CodexApp.closeFontModal()">&times;</button>' +
+                '</div>' +
+                '<div class="modal-body">' +
+                    '<div class="font-options">';
+        
+        // Add font options
+        var currentFont = localStorage.getItem('codex_font') || 'Inter';
+        for (var i = 0; i < this.fonts.length; i++) {
+            var font = this.fonts[i];
+            var isSelected = font.name === currentFont ? ' selected' : '';
+            modalHTML += '<div class="font-option' + isSelected + '" data-font="' + font.name + '" data-family="' + font.family + '">' +
+                '<span class="font-preview" style="font-family: ' + font.family + '">Sample Text</span>' +
+                '<span class="font-label">' + font.label + '</span>' +
+            '</div>';
+        }
+        
+        modalHTML += '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+        
+        // Add to page
+        app.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Add event listeners to font options
+        var fontOptions = document.querySelectorAll('.font-option');
+        for (var i = 0; i < fontOptions.length; i++) {
+            fontOptions[i].onclick = function() {
+                var fontName = this.getAttribute('data-font');
+                var fontFamily = this.getAttribute('data-family');
+                self.changeFont(fontName, fontFamily);
+                self.closeFontModal();
+            };
+        }
+    },
+    
+    // Close font selector modal
+    closeFontModal: function() {
+        var modal = document.querySelector('.font-modal-overlay');
+        if (modal) {
+            modal.remove();
+        }
+    },
+    
+    // Change application font
+    changeFont: function(fontName, fontFamily) {
+        document.body.style.fontFamily = fontFamily;
+        localStorage.setItem('codex_font', fontName);
+        localStorage.setItem('codex_font_family', fontFamily);
+    },
+    
+    // Initialize font from storage
+    initFont: function() {
+        var savedFont = localStorage.getItem('codex_font_family');
+        if (savedFont) {
+            document.body.style.fontFamily = savedFont;
         }
     },
     
@@ -343,6 +432,10 @@ var CodexApp = {
                         </button>
                     </form>
                     
+                    <div class="auth-switch">
+                        <p>Don't have an account? <a href="#" id="show-register">Create Account</a></p>
+                    </div>
+                    
                     <div class="login-footer">
                         <p>Team Knowledge Base • Secure Access</p>
                     </div>
@@ -351,6 +444,61 @@ var CodexApp = {
         `;
         
         this.setupLoginEvents();
+    },
+    
+    // Show register page
+    showRegister: function() {
+        var app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="login-container">
+                <div class="login-box">
+                    <div class="login-header">
+                        <div class="logo">
+                            <span class="logo-icon">📚</span>
+                            <span class="logo-text">Codex</span>
+                        </div>
+                        <h2>Create Account</h2>
+                        <p>Join your team's knowledge base</p>
+                    </div>
+                    
+                    <form id="register-form" class="login-form">
+                        <div class="form-group">
+                            <label for="reg-name">Full Name</label>
+                            <input type="text" id="reg-name" name="name" required 
+                                   placeholder="Enter your full name" autocomplete="name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reg-username">Username</label>
+                            <input type="text" id="reg-username" name="username" required 
+                                   placeholder="Choose a username" autocomplete="username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reg-password">Password</label>
+                            <input type="password" id="reg-password" name="password" required 
+                                   placeholder="Create a password" autocomplete="new-password">
+                        </div>
+                        
+                        <div id="register-error" class="login-error hidden"></div>
+                        
+                        <button type="submit" class="btn btn-primary btn-large">
+                            Create Account
+                        </button>
+                    </form>
+                    
+                    <div class="auth-switch">
+                        <p>Already have an account? <a href="#" id="show-login">Sign In</a></p>
+                    </div>
+                    
+                    <div class="login-footer">
+                        <p>Team Knowledge Base • Secure Access</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        this.setupRegisterEvents();
     },
     
     // Setup login event handlers
@@ -365,9 +513,31 @@ var CodexApp = {
             var password = document.getElementById('password').value;
             var errorDiv = document.getElementById('login-error');
             
+            // Check against default credentials or registered users
+            var isValidUser = false;
+            var currentUser = null;
+            
+            // Check default credentials
             if (username === self.credentials.username && password === self.credentials.password) {
+                isValidUser = true;
+                currentUser = { name: 'Admin User', username: username };
+            } else {
+                // Check registered users
+                var users = JSON.parse(localStorage.getItem('codex_users') || '[]');
+                var foundUser = users.find(function(user) {
+                    return user.username === username && user.password === password;
+                });
+                
+                if (foundUser) {
+                    isValidUser = true;
+                    currentUser = foundUser;
+                }
+            }
+            
+            if (isValidUser) {
                 // Successful login
                 localStorage.setItem('codex_authenticated', 'true');
+                localStorage.setItem('codex_current_user', JSON.stringify(currentUser));
                 self.isAuthenticated = true;
                 
                 // Reload the main application
@@ -385,6 +555,94 @@ var CodexApp = {
         
         // Focus username field
         document.getElementById('username').focus();
+        
+        // Handle register link
+        var showRegisterLink = document.getElementById('show-register');
+        if (showRegisterLink) {
+            showRegisterLink.onclick = function(e) {
+                e.preventDefault();
+                self.showRegister();
+            };
+        }
+    },
+    
+    // Setup register event handlers
+    setupRegisterEvents: function() {
+        var self = this;
+        var registerForm = document.getElementById('register-form');
+        
+        registerForm.onsubmit = function(e) {
+            e.preventDefault();
+            
+            var name = document.getElementById('reg-name').value.trim();
+            var username = document.getElementById('reg-username').value.trim();
+            var password = document.getElementById('reg-password').value;
+            var errorDiv = document.getElementById('register-error');
+            
+            // Basic validation
+            if (!name || !username || !password) {
+                errorDiv.textContent = 'All fields are required';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            if (username.length < 3) {
+                errorDiv.textContent = 'Username must be at least 3 characters';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.textContent = 'Password must be at least 6 characters';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Check if username already exists (simple check against current credentials)
+            if (username === self.credentials.username) {
+                errorDiv.textContent = 'Username already exists';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Store new user data
+            var userData = {
+                name: name,
+                username: username,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage (in a real app, this would go to a backend)
+            var users = JSON.parse(localStorage.getItem('codex_users') || '[]');
+            users.push(userData);
+            localStorage.setItem('codex_users', JSON.stringify(users));
+            
+            // Update credentials to allow login with new account
+            self.credentials.username = username;
+            self.credentials.password = password;
+            
+            // Auto-login the new user
+            localStorage.setItem('codex_authenticated', 'true');
+            localStorage.setItem('codex_current_user', JSON.stringify(userData));
+            self.isAuthenticated = true;
+            
+            // Show success and reload
+            alert('Account created successfully! Welcome to Codex, ' + name + '!');
+            location.reload();
+        };
+        
+        // Focus name field
+        document.getElementById('reg-name').focus();
+        
+        // Handle login link
+        var showLoginLink = document.getElementById('show-login');
+        if (showLoginLink) {
+            showLoginLink.onclick = function(e) {
+                e.preventDefault();
+                self.showLogin();
+            };
+        }
     },
     
     // Logout function
@@ -395,6 +653,8 @@ var CodexApp = {
             location.reload();
         }
     },
+    
+
     
     // Show home view
     showHome: function() {
@@ -811,6 +1071,454 @@ var CodexApp = {
         this.saveData();
         this.showHome();
         this.renderSidebar();
+    },
+    
+    // Setup editor
+    setupEditor: function(docId) {
+        var self = this;
+        var doc = docId ? this.getDocument(docId) : null;
+        var isEditing = !!doc;
+        
+        // Populate collection dropdown
+        var collectionSelect = document.getElementById('document-collection');
+        if (collectionSelect) {
+            collectionSelect.innerHTML = '<option value="">Select collection...</option>';
+            for (var i = 0; i < this.storage.collections.length; i++) {
+                var collection = this.storage.collections[i];
+                var option = document.createElement('option');
+                option.value = collection.id;
+                option.textContent = collection.name;
+                if (doc && doc.collectionId === collection.id) {
+                    option.selected = true;
+                }
+                collectionSelect.appendChild(option);
+            }
+        }
+        
+        // Populate form fields
+        var titleInput = document.getElementById('document-title');
+        var tagsInput = document.getElementById('document-tags');
+        var editor = document.getElementById('markdown-editor');
+        
+        if (titleInput) titleInput.value = doc ? doc.title : '';
+        if (tagsInput) tagsInput.value = doc ? doc.tags.join(', ') : '';
+        if (editor) editor.value = doc ? doc.content : '';
+        
+        // Setup editor events
+        this.setupEditorEvents(doc);
+        
+        // Focus title field
+        if (titleInput) titleInput.focus();
+    },
+    
+    // Setup editor events
+    setupEditorEvents: function(doc) {
+        var self = this;
+        
+        // Save button
+        var saveBtn = document.getElementById('save-document');
+        if (saveBtn) {
+            saveBtn.onclick = function() {
+                self.saveDocument(doc);
+            };
+        }
+        
+        // Cancel button
+        var cancelBtn = document.getElementById('cancel-edit');
+        if (cancelBtn) {
+            cancelBtn.onclick = function() {
+                if (doc) {
+                    self.showDocument(doc.id);
+                } else {
+                    self.showHome();
+                }
+            };
+        }
+        
+        // Tab switching
+        var editTab = document.getElementById('edit-tab');
+        var previewTab = document.getElementById('preview-tab');
+        var editorText = document.getElementById('editor-text');
+        var editorPreview = document.getElementById('editor-preview');
+        
+        if (editTab) {
+            editTab.onclick = function() {
+                editTab.classList.add('active');
+                previewTab.classList.remove('active');
+                editorText.classList.remove('hidden');
+                editorPreview.classList.add('hidden');
+            };
+        }
+        
+        if (previewTab) {
+            previewTab.onclick = function() {
+                previewTab.classList.add('active');
+                editTab.classList.remove('active');
+                editorPreview.classList.remove('hidden');
+                editorText.classList.add('hidden');
+                
+                // Update preview
+                var editor = document.getElementById('markdown-editor');
+                var previewContent = document.getElementById('preview-content');
+                if (editor && previewContent) {
+                    previewContent.innerHTML = self.renderMarkdown(editor.value);
+                }
+            };
+        }
+        
+        // Setup toolbar buttons
+        this.setupToolbarEvents();
+    },
+    
+    // Save document
+    saveDocument: function(existingDoc) {
+        var title = document.getElementById('document-title').value.trim();
+        var collectionId = document.getElementById('document-collection').value;
+        var tags = document.getElementById('document-tags').value.split(',').map(function(tag) {
+            return tag.trim();
+        }).filter(function(tag) {
+            return tag.length > 0;
+        });
+        var content = document.getElementById('markdown-editor').value;
+        
+        if (!title) {
+            alert('Please enter a document title');
+            return;
+        }
+        
+        var now = new Date().toISOString();
+        
+        if (existingDoc) {
+            // Update existing document
+            existingDoc.title = title;
+            existingDoc.collectionId = collectionId;
+            existingDoc.tags = tags;
+            existingDoc.content = content;
+            existingDoc.excerpt = this.generateExcerpt(content);
+            existingDoc.updatedAt = now;
+        } else {
+            // Create new document
+            var newDoc = {
+                id: 'doc_' + Date.now(),
+                title: title,
+                content: content,
+                excerpt: this.generateExcerpt(content),
+                collectionId: collectionId,
+                tags: tags,
+                author: 'Demo User',
+                createdAt: now,
+                updatedAt: now,
+                isPublic: false,
+                views: 0
+            };
+            
+            this.storage.documents.push(newDoc);
+            existingDoc = newDoc;
+        }
+        
+        // Update collection document count
+        this.updateCollectionCounts();
+        
+        this.saveData();
+        this.showDocument(existingDoc.id);
+        this.renderSidebar();
+    },
+    
+    // Update collection document counts
+    updateCollectionCounts: function() {
+        for (var i = 0; i < this.storage.collections.length; i++) {
+            var collection = this.storage.collections[i];
+            collection.documentCount = this.storage.documents.filter(function(doc) {
+                return doc.collectionId === collection.id;
+            }).length;
+        }
+    },
+    
+    // Render sidebar
+    renderSidebar: function() {
+        var collectionsDiv = document.getElementById('collections-list');
+        var recentDiv = document.getElementById('recent-documents');
+        
+        if (collectionsDiv) {
+            collectionsDiv.innerHTML = '';
+            for (var i = 0; i < this.storage.collections.length; i++) {
+                var collection = this.storage.collections[i];
+                var collectionEl = document.createElement('div');
+                collectionEl.className = 'collection-item';
+                collectionEl.innerHTML = 
+                    '<div class="collection-name">' + this.escapeHtml(collection.name) + '</div>' +
+                    '<div class="collection-count">' + collection.documentCount + ' docs</div>';
+                collectionsDiv.appendChild(collectionEl);
+            }
+        }
+        
+        if (recentDiv) {
+            var recentDocs = this.getRecentDocuments(5);
+            recentDiv.innerHTML = '';
+            for (var i = 0; i < recentDocs.length; i++) {
+                var doc = recentDocs[i];
+                var docEl = document.createElement('div');
+                docEl.className = 'recent-doc-item';
+                docEl.innerHTML = 
+                    '<div class="recent-doc-title">' + this.escapeHtml(doc.title) + '</div>' +
+                    '<div class="recent-doc-time">' + this.getRelativeTime(doc.updatedAt) + '</div>';
+                
+                // Add click handler
+                var self = this;
+                docEl.onclick = (function(docId) {
+                    return function() {
+                        self.showDocument(docId);
+                    };
+                })(doc.id);
+                
+                recentDiv.appendChild(docEl);
+            }
+        }
+    },
+    
+    // Render document content
+    renderDocumentContent: function(doc) {
+        var contentDiv = document.getElementById('document-content');
+        var breadcrumb = document.getElementById('breadcrumb-path');
+        
+        if (breadcrumb) {
+            var collection = this.getCollection(doc.collectionId);
+            breadcrumb.textContent = collection ? collection.name + ' / ' + doc.title : doc.title;
+        }
+        
+        if (contentDiv) {
+            contentDiv.innerHTML = 
+                '<header class="document-header-content">' +
+                '<h1>' + this.escapeHtml(doc.title) + '</h1>' +
+                '<div class="document-meta">' +
+                '<span>By ' + this.escapeHtml(doc.author) + '</span>' +
+                '<span>•</span>' +
+                '<span>' + this.formatDate(doc.updatedAt) + '</span>' +
+                '<span>•</span>' +
+                '<span>' + doc.views + ' views</span>' +
+                '</div>' +
+                '</header>' +
+                '<div class="document-body">' + this.renderMarkdown(doc.content) + '</div>';
+        }
+    },
+    
+    // Handle search
+    handleSearch: function(query) {
+        var searchResults = document.getElementById('search-results');
+        
+        if (!query.trim()) {
+            this.hideSearchResults();
+            return;
+        }
+        
+        var results = this.searchDocuments(query);
+        
+        if (results.length === 0) {
+            searchResults.innerHTML = '<div class="search-no-results">No documents found</div>';
+        } else {
+            var html = '';
+            for (var i = 0; i < Math.min(results.length, 5); i++) {
+                var doc = results[i];
+                var collection = this.getCollection(doc.collectionId);
+                html += 
+                    '<div class="search-result-item" data-doc-id="' + doc.id + '">' +
+                    '<div class="search-result-title">' + this.escapeHtml(doc.title) + '</div>' +
+                    '<div class="search-result-meta">' + 
+                    (collection ? collection.name + ' • ' : '') + 
+                    this.formatDate(doc.updatedAt) + '</div>' +
+                    '<div class="search-result-excerpt">' + this.escapeHtml(doc.excerpt) + '</div>' +
+                    '</div>';
+            }
+            searchResults.innerHTML = html;
+            
+            // Add click handlers
+            var self = this;
+            var resultItems = searchResults.querySelectorAll('.search-result-item');
+            for (var i = 0; i < resultItems.length; i++) {
+                resultItems[i].onclick = function() {
+                    var docId = this.getAttribute('data-doc-id');
+                    self.showDocument(docId);
+                    self.hideSearchResults();
+                };
+            }
+        }
+        
+        searchResults.classList.remove('hidden');
+    },
+    
+    // Search documents
+    searchDocuments: function(query) {
+        var searchTerm = query.toLowerCase();
+        var results = [];
+        
+        for (var i = 0; i < this.storage.documents.length; i++) {
+            var doc = this.storage.documents[i];
+            var score = 0;
+            
+            // Search in title (higher weight)
+            if (doc.title.toLowerCase().indexOf(searchTerm) !== -1) {
+                score += 3;
+            }
+            
+            // Search in content
+            if (doc.content.toLowerCase().indexOf(searchTerm) !== -1) {
+                score += 2;
+            }
+            
+            // Search in tags
+            for (var j = 0; j < doc.tags.length; j++) {
+                if (doc.tags[j].toLowerCase().indexOf(searchTerm) !== -1) {
+                    score += 1;
+                }
+            }
+            
+            if (score > 0) {
+                results.push({ doc: doc, score: score });
+            }
+        }
+        
+        // Sort by score
+        results.sort(function(a, b) {
+            return b.score - a.score;
+        });
+        
+        return results.map(function(result) {
+            return result.doc;
+        });
+    },
+    
+    // Hide search results
+    hideSearchResults: function() {
+        var searchResults = document.getElementById('search-results');
+        if (searchResults) {
+            searchResults.classList.add('hidden');
+        }
+    },
+    
+    // Setup toolbar events
+    setupToolbarEvents: function() {
+        var self = this;
+        var toolbarButtons = document.querySelectorAll('.toolbar-btn');
+        
+        for (var i = 0; i < toolbarButtons.length; i++) {
+            var button = toolbarButtons[i];
+            var action = button.getAttribute('data-action');
+            
+            button.onclick = (function(actionType) {
+                return function() {
+                    self.insertMarkdown(actionType);
+                };
+            })(action);
+        }
+    },
+    
+    // Insert markdown formatting
+    insertMarkdown: function(type) {
+        var editor = document.getElementById('markdown-editor');
+        if (!editor) return;
+        
+        var start = editor.selectionStart;
+        var end = editor.selectionEnd;
+        var selectedText = editor.value.substring(start, end);
+        var beforeText = editor.value.substring(0, start);
+        var afterText = editor.value.substring(end);
+        var newText = '';
+        var newCursorPos = start;
+        
+        switch (type) {
+            case 'bold':
+                if (selectedText) {
+                    newText = '**' + selectedText + '**';
+                    newCursorPos = start + newText.length;
+                } else {
+                    newText = '**bold text**';
+                    newCursorPos = start + 2;
+                }
+                break;
+                
+            case 'italic':
+                if (selectedText) {
+                    newText = '*' + selectedText + '*';
+                    newCursorPos = start + newText.length;
+                } else {
+                    newText = '*italic text*';
+                    newCursorPos = start + 1;
+                }
+                break;
+                
+            case 'heading':
+                var lines = (beforeText + selectedText + afterText).split('\n');
+                var currentLineIndex = beforeText.split('\n').length - 1;
+                var currentLine = lines[currentLineIndex];
+                
+                if (currentLine.startsWith('### ')) {
+                    lines[currentLineIndex] = currentLine.replace(/^### /, '');
+                } else if (currentLine.startsWith('## ')) {
+                    lines[currentLineIndex] = '### ' + currentLine.replace(/^## /, '');
+                } else if (currentLine.startsWith('# ')) {
+                    lines[currentLineIndex] = '## ' + currentLine.replace(/^# /, '');
+                } else {
+                    lines[currentLineIndex] = '# ' + currentLine;
+                }
+                
+                editor.value = lines.join('\n');
+                newCursorPos = end + 2;
+                break;
+                
+            case 'link':
+                if (selectedText) {
+                    newText = '[' + selectedText + '](url)';
+                    newCursorPos = start + selectedText.length + 3;
+                } else {
+                    newText = '[link text](url)';
+                    newCursorPos = start + 1;
+                }
+                break;
+                
+            case 'code':
+                if (selectedText) {
+                    if (selectedText.includes('\n')) {
+                        newText = '```\n' + selectedText + '\n```';
+                        newCursorPos = start + newText.length;
+                    } else {
+                        newText = '`' + selectedText + '`';
+                        newCursorPos = start + newText.length;
+                    }
+                } else {
+                    newText = '`code`';
+                    newCursorPos = start + 1;
+                }
+                break;
+                
+            case 'list':
+                var lines = (beforeText + selectedText + afterText).split('\n');
+                var startLineIndex = beforeText.split('\n').length - 1;
+                var endLineIndex = startLineIndex + selectedText.split('\n').length - 1;
+                
+                for (var i = startLineIndex; i <= endLineIndex; i++) {
+                    if (lines[i].trim()) {
+                        if (lines[i].startsWith('- ')) {
+                            lines[i] = lines[i].replace(/^- /, '');
+                        } else {
+                            lines[i] = '- ' + lines[i];
+                        }
+                    }
+                }
+                
+                editor.value = lines.join('\n');
+                newCursorPos = end + 2;
+                break;
+                
+            default:
+                return;
+        }
+        
+        if (type !== 'heading' && type !== 'list') {
+            editor.value = beforeText + newText + afterText;
+        }
+        
+        editor.focus();
+        editor.setSelectionRange(newCursorPos, newCursorPos);
     }
 };
 
