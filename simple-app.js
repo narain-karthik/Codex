@@ -10,11 +10,7 @@ var CodexApp = {
     currentDocument: null,
     isAuthenticated: false,
     
-    // User credentials - change these to your preferred login
-    credentials: {
-        username: 'narain1010',
-        password: 'narain1010@'
-    },
+    // All user credentials are now managed through the Master Panel
     
     // Available fonts
     fonts: [
@@ -38,6 +34,7 @@ var CodexApp = {
         }
         
         this.loadData();
+        this.updateCollectionCounts(); // Ensure counts are correct on startup
         this.setupEventListeners();
         this.setupTheme();
         this.initFont();
@@ -399,6 +396,10 @@ var CodexApp = {
     // Show login page
     showLogin: function() {
         this.hideLoading();
+        
+        // Create default demo users if none exist
+        this.createDefaultUsers();
+        
         var app = document.getElementById('app');
         app.innerHTML = `
             <div class="login-container">
@@ -434,6 +435,10 @@ var CodexApp = {
                     
                     <div class="auth-switch">
                         <p>Don't have an account? <a href="#" id="show-register">Create Account</a></p>
+                        <p><a href="master.html" class="master-link">
+                            <i data-feather="shield"></i>
+                            Master Panel (Admin Access)
+                        </a></p>
                     </div>
                     
                     <div class="login-footer">
@@ -443,7 +448,30 @@ var CodexApp = {
             </div>
         `;
         
+        // Initialize feather icons for the new login
+        if (window.feather) {
+            feather.replace();
+        }
+        
         this.setupLoginEvents();
+    },
+    
+    // Create default users for demo
+    createDefaultUsers: function() {
+        var existingUsers = JSON.parse(localStorage.getItem('codex_users') || '[]');
+        
+        if (existingUsers.length === 0) {
+            var defaultUsers = [
+                {
+                    name: 'Narain Karthik J',
+                    username: 'narain1010',
+                    password: 'narain1010@',
+                    created: new Date().toISOString()
+                }
+            ];
+            
+            localStorage.setItem('codex_users', JSON.stringify(defaultUsers));
+        }
     },
     
     // Show register page
@@ -513,25 +541,19 @@ var CodexApp = {
             var password = document.getElementById('password').value;
             var errorDiv = document.getElementById('login-error');
             
-            // Check against default credentials or registered users
+            // Check against registered users only (all managed through Master Panel)
             var isValidUser = false;
             var currentUser = null;
             
-            // Check default credentials
-            if (username === self.credentials.username && password === self.credentials.password) {
+            // Check registered users
+            var users = JSON.parse(localStorage.getItem('codex_users') || '[]');
+            var foundUser = users.find(function(user) {
+                return user.username === username && user.password === password;
+            });
+            
+            if (foundUser) {
                 isValidUser = true;
-                currentUser = { name: 'Admin User', username: username };
-            } else {
-                // Check registered users
-                var users = JSON.parse(localStorage.getItem('codex_users') || '[]');
-                var foundUser = users.find(function(user) {
-                    return user.username === username && user.password === password;
-                });
-                
-                if (foundUser) {
-                    isValidUser = true;
-                    currentUser = foundUser;
-                }
+                currentUser = foundUser;
             }
             
             if (isValidUser) {
@@ -681,7 +703,7 @@ var CodexApp = {
     },
     
     // Show editor
-    showEditor: function(docId) {
+    showEditor: function(docId, collectionId) {
         this.currentView = 'editor';
         this.hideAllViews();
         document.getElementById('editor-view').classList.add('active');
@@ -809,7 +831,7 @@ var CodexApp = {
                 title: title,
                 content: content,
                 excerpt: this.generateExcerpt(content),
-                collectionId: 'getting-started',
+                collectionId: collectionId || 'getting-started',
                 tags: [],
                 author: 'User',
                 createdAt: now,
@@ -820,9 +842,141 @@ var CodexApp = {
             this.storage.documents.push(newDoc);
         }
         
+        // Update collection document counts
+        this.updateCollectionCounts();
+        
         this.saveData();
         this.showHome();
         this.renderSidebar();
+    },
+    
+    // Show collection view
+    showCollection: function(collectionId) {
+        this.currentView = 'collection';
+        var collection = this.getCollection(collectionId);
+        
+        if (!collection) {
+            console.error('Collection not found:', collectionId);
+            return;
+        }
+        
+        // Get documents in this collection
+        var collectionDocs = this.storage.documents.filter(function(doc) {
+            return doc.collectionId === collectionId;
+        });
+        
+        var app = document.getElementById('app');
+        app.innerHTML = `
+            <header class="header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">
+                        <i data-feather="menu"></i>
+                    </button>
+                    <div class="logo">
+                        <span class="logo-icon">📚</span>
+                        <span class="logo-text">Codex</span>
+                    </div>
+                </div>
+                
+                <div class="header-center">
+                    <div class="search-container">
+                        <i data-feather="search" class="search-icon"></i>
+                        <input type="text" id="global-search" placeholder="Search documents..." autocomplete="off">
+                        <div id="search-results" class="search-results hidden"></div>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <button id="font-selector" class="font-selector" aria-label="Change font" title="Font Options">
+                        <i data-feather="type"></i>
+                    </button>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                        <i data-feather="moon"></i>
+                    </button>
+                    <a href="master.html" class="btn btn-tertiary" title="Master Panel">
+                        <i data-feather="shield"></i>
+                        Master
+                    </a>
+                    <button id="new-document" class="btn btn-primary">
+                        <i data-feather="plus"></i>
+                        New Document
+                    </button>
+                    <button id="logout-btn" class="btn btn-secondary">
+                        <i data-feather="log-out"></i>
+                        Logout
+                    </button>
+                </div>
+            </header>
+
+            <main class="main">
+                <aside id="sidebar" class="sidebar">
+                    <div class="sidebar-content">
+                        <div class="sidebar-section">
+                            <div class="sidebar-section-header">
+                                <h3>Collections</h3>
+                                <button id="new-collection" class="btn-icon" aria-label="New collection">
+                                    <i data-feather="plus"></i>
+                                </button>
+                            </div>
+                            <div id="collections-list" class="collections-list">
+                                <!-- Collections will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar-section">
+                            <div class="sidebar-section-header">
+                                <h3>Recent Documents</h3>
+                            </div>
+                            <div id="recent-documents" class="recent-documents">
+                                <!-- Recent documents will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="content-area">
+                    <div class="content-header">
+                        <nav class="breadcrumb">
+                            <a href="#" onclick="CodexApp.showHome()">Home</a>
+                            <span class="breadcrumb-separator">/</span>
+                            <span class="breadcrumb-current">${this.escapeHtml(collection.name)}</span>
+                        </nav>
+                        
+                        <div class="collection-header">
+                            <div class="collection-info">
+                                <h1>${this.escapeHtml(collection.name)}</h1>
+                                <p class="collection-description">${this.escapeHtml(collection.description || '')}</p>
+                                <div class="collection-stats">
+                                    <span class="stat">${collectionDocs.length} documents</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-body">
+                        <div class="documents-grid">
+                            ${collectionDocs.length === 0 
+                                ? '<div class="empty-state">' +
+                                  '<div class="empty-state-icon"><i data-feather="file-text"></i></div>' +
+                                  '<div class="empty-state-title">No documents yet</div>' +
+                                  '<div class="empty-state-message">Create your first document in this collection</div>' +
+                                  '<button class="btn btn-primary" onclick="CodexApp.showEditor(null, \'' + collectionId + '\')">' +
+                                  '<i data-feather="plus"></i> Create Document</button>' +
+                                  '</div>'
+                                : collectionDocs.map(doc => this.createDocumentCard(doc)).join('')
+                            }
+                        </div>
+                    </div>
+                </div>
+            </main>
+        `;
+        
+        this.setupEventListeners();
+        this.renderSidebar();
+        
+        if (window.feather) {
+            feather.replace();
+        }
     },
     
     // Render sidebar
@@ -835,6 +989,7 @@ var CodexApp = {
     renderCollections: function() {
         var collectionsList = document.getElementById('collections-list');
         var collections = this.storage.collections;
+        var self = this;
         
         if (collections.length === 0) {
             collectionsList.innerHTML = '<div class="empty-collections">No collections yet</div>';
@@ -842,7 +997,7 @@ var CodexApp = {
             var html = '';
             for (var i = 0; i < collections.length; i++) {
                 var col = collections[i];
-                html += '<div class="collection-item">' +
+                html += '<div class="collection-item" onclick="CodexApp.showCollection(\'' + col.id + '\')" style="cursor: pointer;">' +
                        '<i data-feather="folder" class="collection-icon"></i>' +
                        '<span class="collection-name">' + this.escapeHtml(col.name) + '</span>' +
                        '<span class="collection-count">' + (col.documentCount || 0) + '</span>' +
