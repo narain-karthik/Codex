@@ -1,0 +1,176 @@
+/* Dark Mode Styles */
+[data-theme="dark"] {
+    /* Dark theme colors */
+    --primary-color: #4dabf7;
+    --primary-hover: #339af0;
+    --secondary-color: #868e96;
+    --success-color: #51cf66;
+    --danger-color: #ff6b6b;
+    --warning-color: #ffd43b;
+    
+    /* Background colors */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3d3d3d;
+    --bg-hover: #404040;
+    
+    /* Text colors */
+    --text-primary: #ffffff;
+    --text-secondary: #c1c2c5;
+    --text-muted: #9ca3af;
+    
+    /* Border colors */
+    --border-color: #404040;
+    --border-hover: #606060;
+    
+    /* Shadow */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] .search-results {
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .document-card {
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .document-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .quick-action:hover {
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .modal {
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .loading-screen {
+    background: var(--bg-primary);
+}
+
+[data-theme="dark"] code {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] pre {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] blockquote {
+    border-left-color: var(--primary-color);
+    color: var(--text-secondary);
+}
+
+/* Syntax highlighting for dark mode */
+[data-theme="dark"] .token.comment,
+[data-theme="dark"] .token.prolog,
+[data-theme="dark"] .token.doctype,
+[data-theme="dark"] .token.cdata {
+    color: #6a9955;
+}
+
+[data-theme="dark"] .token.punctuation {
+    color: #d4d4d4;
+}
+
+[data-theme="dark"] .token.property,
+[data-theme="dark"] .token.tag,
+[data-theme="dark"] .token.boolean,
+[data-theme="dark"] .token.number,
+[data-theme="dark"] .token.constant,
+[data-theme="dark"] .token.symbol,
+[data-theme="dark"] .token.deleted {
+    color: #ce9178;
+}
+
+[data-theme="dark"] .token.selector,
+[data-theme="dark"] .token.attr-name,
+[data-theme="dark"] .token.string,
+[data-theme="dark"] .token.char,
+[data-theme="dark"] .token.builtin,
+[data-theme="dark"] .token.inserted {
+    color: #ce9178;
+}
+
+[data-theme="dark"] .token.operator,
+[data-theme="dark"] .token.entity,
+[data-theme="dark"] .token.url,
+[data-theme="dark"] .language-css .token.string,
+[data-theme="dark"] .style .token.string {
+    color: #d4d4d4;
+}
+
+[data-theme="dark"] .token.atrule,
+[data-theme="dark"] .token.attr-value,
+[data-theme="dark"] .token.keyword {
+    color: #569cd6;
+}
+
+[data-theme="dark"] .token.function,
+[data-theme="dark"] .token.class-name {
+    color: #dcdcaa;
+}
+
+[data-theme="dark"] .token.regex,
+[data-theme="dark"] .token.important,
+[data-theme="dark"] .token.variable {
+    color: #d16969;
+}
+
+/* Image adjustments for dark mode */
+[data-theme="dark"] img {
+    opacity: 0.9;
+}
+
+[data-theme="dark"] img:hover {
+    opacity: 1;
+}
+
+/* Form adjustments for dark mode */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+    box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+}
+
+/* Scrollbar styling for dark mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
+}
+
+/* Selection styling for dark mode */
+[data-theme="dark"] ::selection {
+    background: rgba(77, 171, 247, 0.3);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] ::-moz-selection {
+    background: rgba(77, 171, 247, 0.3);
+    color: var(--text-primary);
+}

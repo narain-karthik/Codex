@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codex - Team Knowledge Base</title>
+    <meta name="description" content="Your team's knowledge base - organize, share, and collaborate on documents">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Loading Codex...</p>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">
+                    <i data-feather="menu"></i>
+                </button>
+                <div class="logo">
+                    <span class="logo-icon">📚</span>
+                    <span class="logo-text">Codex</span>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="search-container">
+                    <i data-feather="search" class="search-icon"></i>
+                    <input type="text" id="global-search" placeholder="Search documents..." autocomplete="off">
+                    <div id="search-results" class="search-results hidden"></div>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i data-feather="moon"></i>
+                </button>
+                <button id="new-document" class="btn btn-primary">
+                    <i data-feather="plus"></i>
+                    New Document
+                </button>
+                <button id="logout-btn" class="btn btn-secondary">
+                    <i data-feather="log-out"></i>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-content">
+                    <div class="sidebar-section">
+                        <div class="sidebar-section-header">
+                            <h3>Collections</h3>
+                            <button id="new-collection" class="btn-icon" aria-label="New collection">
+                                <i data-feather="plus"></i>
+                            </button>
+                        </div>
+                        <div id="collections-list" class="collections-list">
+                            <!-- Collections will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <div class="sidebar-section-header">
+                            <h3>Recent Documents</h3>
+                        </div>
+                        <div id="recent-documents" class="recent-documents">
+                            <!-- Recent documents will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Home View -->
+                <div id="home-view" class="view active">
+                    <div class="home-hero">
+                        <h1>Welcome to your knowledge base</h1>
+                        <p>Create, organize, and share your team's documentation</p>
+                        <div class="home-actions">
+                            <button id="create-first-doc" class="btn btn-primary btn-large">
+                                <i data-feather="edit-3"></i>
+                                Create your first document
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="home-sections">
+                        <section class="home-section">
+                            <h2>Recent Activity</h2>
+                            <div id="recent-activity" class="document-grid">
+                                <!-- Recent documents will be populated by JavaScript -->
+                            </div>
+                        </section>
+                        
+                        <section class="home-section">
+                            <h2>Quick Actions</h2>
+                            <div class="quick-actions">
+                                <button class="quick-action" id="quick-new-doc">
+                                    <i data-feather="file-plus"></i>
+                                    <span>New Document</span>
+                                </button>
+                                <button class="quick-action" id="quick-new-collection">
+                                    <i data-feather="folder-plus"></i>
+                                    <span>New Collection</span>
+                                </button>
+                                <button class="quick-action" id="quick-search">
+                                    <i data-feather="search"></i>
+                                    <span>Search</span>
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Document View -->
+                <div id="document-view" class="view">
+                    <div class="document-header">
+                        <div class="document-breadcrumb">
+                            <span id="breadcrumb-path"></span>
+                        </div>
+                        <div class="document-actions">
+                            <button id="edit-document" class="btn btn-secondary">
+                                <i data-feather="edit"></i>
+                                Edit
+                            </button>
+                            <button id="share-document" class="btn btn-secondary">
+                                <i data-feather="share-2"></i>
+                                Share
+                            </button>
+                            <button id="delete-document" class="btn btn-danger">
+                                <i data-feather="trash-2"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <article id="document-content" class="document-content">
+                        <!-- Document content will be rendered here -->
+                    </article>
+                </div>
+
+                <!-- Editor View -->
+                <div id="editor-view" class="view">
+                    <div class="editor-header">
+                        <div class="editor-breadcrumb">
+                            <span id="editor-breadcrumb-path"></span>
+                        </div>
+                        <div class="editor-actions">
+                            <button id="save-document" class="btn btn-primary">
+                                <i data-feather="save"></i>
+                                Save
+                            </button>
+                            <button id="cancel-edit" class="btn btn-secondary">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-container">
+                        <div class="editor-sidebar">
+                            <div class="editor-meta">
+                                <div class="form-group">
+                                    <label for="document-title">Title</label>
+                                    <input type="text" id="document-title" placeholder="Document title...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="document-collection">Collection</label>
+                                    <select id="document-collection">
+                                        <option value="">Select collection...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="document-tags">Tags</label>
+                                    <input type="text" id="document-tags" placeholder="Add tags...">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="editor-main">
+                            <div class="editor-toolbar">
+                                <button class="toolbar-btn" data-action="bold" title="Bold">
+                                    <i data-feather="bold"></i>
+                                </button>
+                                <button class="toolbar-btn" data-action="italic" title="Italic">
+                                    <i data-feather="italic"></i>
+                                </button>
+                                <button class="toolbar-btn" data-action="heading" title="Heading">
+                                    <i data-feather="type"></i>
+                                </button>
+                                <button class="toolbar-btn" data-action="link" title="Link">
+                                    <i data-feather="link"></i>
+                                </button>
+                                <button class="toolbar-btn" data-action="code" title="Code">
+                                    <i data-feather="code"></i>
+                                </button>
+                                <button class="toolbar-btn" data-action="list" title="List">
+                                    <i data-feather="list"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="editor-content">
+                                <div class="editor-tabs">
+                                    <button id="edit-tab" class="editor-tab active">Edit</button>
+                                    <button id="preview-tab" class="editor-tab">Preview</button>
+                                </div>
+                                
+                                <div id="editor-text" class="editor-text">
+                                    <textarea id="markdown-editor" placeholder="Start writing..."></textarea>
+                                </div>
+                                
+                                <div id="editor-preview" class="editor-preview hidden">
+                                    <div id="preview-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal Title</h3>
+                <button id="modal-close" class="btn-icon">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="modal-content">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <script src="simple-app.js"></script>
+</body>
+</html>
